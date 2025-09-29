@@ -8,5 +8,6 @@ namespace Nop.Web.Framework.Infrastructure.Extensions
 {
     internal class ApplicationBuilderExtension
     {
+        string test = "";
     }
 }
