@@ -22,9 +22,13 @@ namespace Nop.Web.Framework.Infrastructure.Extensions
             // Refer to the OneNote - DevOps - TLS Documentation for Windows Server
             ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault;
 
+            // *** Explanation ***
+            // Since Application Settings is stored in the file system, we need to init the file provider
             // Init IO class for on-disk file system usage
-            /// TBD
+            CommonHelper.DefaultFileProvider = new NopFileProvider(builder.Environment);
 
+            // --- Technique ---
+            // Reflection to find all IConfig implementations
             // find all IConfig classes
             /// Init Application Configuration Instances
             var typeFinder = new WebAppTypeFinder();
@@ -49,12 +53,19 @@ namespace Nop.Web.Framework.Infrastructure.Extensions
 
         public static void ConfigureApplicationServices(this IServiceCollection services, WebApplicationBuilder builder)
         {
+            // HttpContextAccessor Service is a service that provides access to the current HttpContext outside of a controller or middleware.
+            // It lets non-HTTP-aware components (like services, repositories, or helpers) access information about the current HTTP request.
             // add accessor to HttpContext
             services.AddHttpContextAccessor();
 
             // initialize plugins
             var mvcCoreBuilder = services.AddMvcCore();
             var pluginConfig = new PluginConfig();
+            builder.Configuration.GetSection(nameof(PluginConfig)).Bind(pluginConfig, options => options.BindNonPublicProperties = true);
+            mvcCoreBuilder.PartManager.InitializePlugins(pluginConfig);
+
+            // Create engine and configure service provider
+            var engine = EngineContext.Create();
 
             
         }
