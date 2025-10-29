@@ -15,10 +15,14 @@ namespace Nop.Core.Infrastructure
     /// <remarks> Access to the instance is not synchronized</remarks>
     public partial class Singleton<T> : BaseSingleton
     {
+        // The actual instance
         private static T _instance;
 
+        /*
+         * Public access for each singleton instance so that the actual instance cannot be accessed improperly
+         */
         /// <summary>
-        /// The single instance for the specified type T. Only one instance (at the time) of this o
+        /// The single instance for the specified type T. Only one instance (at the time) of this object for each type of T
         /// </summary>
         public static T Instance
         {

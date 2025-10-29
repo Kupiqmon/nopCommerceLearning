@@ -1,7 +1,6 @@
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection; // useAutofac
-using Microsoft.Extensions.DependencyInjection;
 using Nop.Core.Configuration;
+using Nop.Core.Infrastructure;
 using Nop.Web.Framework.Infrastructure.Extensions;
 
 
@@ -26,7 +25,7 @@ namespace Nop.Web
 
             learningBuilder.Services.ConfigureApplicationSettings(learningBuilder);
 
-            var appSettings = Singleton<appSettings>.Instance;
+            var appSettings = Singleton<AppSettings>.Instance;
 
             var useAutofac = appSettings.Get<CommonConfig>().UseAutofac;
 
@@ -52,6 +51,22 @@ namespace Nop.Web
                 });
 
             learningBuilder.Services.ConfigureApplicationServices(learningBuilder);
+            //Automatically add class with 'Controller' as suffix
+
+            learningBuilder.Services.AddControllersWithViews().AddXmlSerializerFormatters(); //Input Formatters
+
+            var app = learningBuilder.Build();
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.MapControllers();
+            // Set up the conventional routes
+            /*app.MapControllerRoute(
+               name: "default",
+               pattern: "{controller=Home}/{action=Index}/{id?}");*/
+
+            await app.RunAsync();
 
 
         }

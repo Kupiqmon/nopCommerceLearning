@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection; // DependencyInjection.Abstractions
+using Nop.Core;
 using Nop.Core.Configuration;
+using Nop.Core.Helper;
 using Nop.Core.Infrastructure;
 using System.Net;
 
 namespace Nop.Web.Framework.Infrastructure.Extensions
 {
     // Convention when using Extensions method
-    public static class ServiceCollectionEntensions
+    public static class ServiceCollectionExtensions
     {
         // DependencyInjection.Abstractions (9.0.8) is required for IServiceCollection interface
         public static void ConfigureApplicationSettings(this IServiceCollection services, WebApplicationBuilder builder)
@@ -36,10 +39,12 @@ namespace Nop.Web.Framework.Infrastructure.Extensions
             /// Binding the each configuration into the corresponding section
             foreach (var config in configurations)
             {
-                continue;
+                builder.Configuration.GetSection(config.Name).Bind(config, options => options.BindNonPublicProperties = true);
             }
 
-            /// Save Application settings into both file system and application (service, database, cloud,...) 
+            /// Save Application settings into both file system and application (service, database, cloud,...)
+            var appSettings = AppSettingHelper.SaveAppSettings(configurations, CommonHelper.DefaultFileProvider);
+            services.AddSingleton(appSettings);
         }
 
         public static void ConfigureApplicationServices(this IServiceCollection services, WebApplicationBuilder builder)

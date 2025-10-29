@@ -14,4 +14,9 @@
     <ProjectReference Include="..\..\Libraries\Nop.Core\Nop.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>
